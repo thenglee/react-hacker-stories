@@ -29,6 +29,14 @@ function App() {
 
       <hr />
 
+      <List />
+    </div>
+  );
+}
+
+function List() {
+  return (
+    <div>
       {list.map(function(item) {
         return (
           <div key={item.objectID}>
