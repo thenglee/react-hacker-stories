@@ -4,12 +4,18 @@ import styled from 'styled-components';
 import { ReactComponent as Check } from './check.svg';
 
 const useSemiPersistentState = (key, initialState) => {
+  const isMounted = React.useRef(false);
+
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue];
