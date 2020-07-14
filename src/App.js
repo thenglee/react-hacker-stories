@@ -54,6 +54,10 @@ const storiesReducer = (state, action) => {
   }
 };
 
+const getSumComments = stories => {
+  return stories.data.reduce((result, value) => result + value.num_comments, 0);
+};
+
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
@@ -201,9 +205,13 @@ const App = () => {
     event.preventDefault();
   };
 
+  const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
+
   return (
     <StyledContainer>
-      <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
+      <StyledHeadlinePrimary>
+        My Hacker Stories with {sumComments} comments
+      </StyledHeadlinePrimary>
 
       <SearchForm
         searchTerm={searchTerm}
