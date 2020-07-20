@@ -330,13 +330,13 @@ type ListProps = {
   onRemoveItem: (item: Story) => void;
 };
 
-const List = React.memo(({ list, onRemoveItem }: ListProps) => (
+const List = ({ list, onRemoveItem }: ListProps) => (
   <>
     {list.map(item => (
       <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
     ))}
   </>
-));
+);
 
 type ItemProps = {
   item: Story;
@@ -360,3 +360,5 @@ const Item = ({ item, onRemoveItem }: ItemProps) => (
 );
 
 export default App;
+
+export { SearchForm, InputWithLabel, List, Item };
