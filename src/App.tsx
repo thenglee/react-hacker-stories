@@ -354,16 +354,19 @@ const List = ({ list, onRemoveItem }: ListProps) => {
     COMMENT: false,
     POINT: false
   };
-  const [sort, setSort] = React.useState('NONE');
+  const [sort, setSort] = React.useState({ sortKey: 'NONE', isReverse: false });
   const [activeBtn, setActiveBtn] = React.useState(defaultBtnStates);
 
   const handleSort = (sortKey: string) => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse; // when user click on the same button again
+    setSort({ sortKey, isReverse });
     setActiveBtn({ ...defaultBtnStates, ...{ [sortKey]: true } });
   };
 
-  const sortFunction = SORTS[sort as keyof typeof SORTS];
-  const sortedList = sortFunction(list);
+  const sortFunction = SORTS[sort.sortKey as keyof typeof SORTS];
+  const sortedList = sort.isReverse
+    ? sortFunction(list).reverse()
+    : sortFunction(list);
 
   return (
     <div>
