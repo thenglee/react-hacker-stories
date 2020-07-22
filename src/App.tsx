@@ -3,6 +3,8 @@ import axios from 'axios';
 import { sortBy } from 'lodash';
 import styled from 'styled-components';
 import { ReactComponent as Check } from './check.svg';
+import { ReactComponent as UpArrow } from './upload.svg';
+import { ReactComponent as DownArrow } from './download.svg';
 
 type Story = {
   objectID: string;
@@ -378,6 +380,13 @@ const List = ({ list, onRemoveItem }: ListProps) => {
             onClick={() => handleSort('TITLE')}
           >
             Title
+            {sort.sortKey === 'TITLE' ? (
+              sort.isReverse ? (
+                <DownArrow height="14px" width="14px" />
+              ) : (
+                <UpArrow height="14px" width="14px" />
+              )
+            ) : null}
           </StyledHeaderButton>
         </span>
         <span style={{ width: '30%' }}>
@@ -387,6 +396,13 @@ const List = ({ list, onRemoveItem }: ListProps) => {
             onClick={() => handleSort('AUTHOR')}
           >
             Author
+            {sort.sortKey === 'AUTHOR' ? (
+              sort.isReverse ? (
+                <DownArrow height="14px" width="14px" />
+              ) : (
+                <UpArrow height="14px" width="14px" />
+              )
+            ) : null}
           </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>
@@ -396,6 +412,13 @@ const List = ({ list, onRemoveItem }: ListProps) => {
             onClick={() => handleSort('COMMENT')}
           >
             Comments
+            {sort.sortKey === 'COMMENT' ? (
+              sort.isReverse ? (
+                <UpArrow height="14px" width="14px" />
+              ) : (
+                <DownArrow height="14px" width="14px" />
+              )
+            ) : null}
           </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>
@@ -405,6 +428,13 @@ const List = ({ list, onRemoveItem }: ListProps) => {
             onClick={() => handleSort('POINT')}
           >
             Points
+            {sort.sortKey === 'POINT' ? (
+              sort.isReverse ? (
+                <UpArrow height="14px" width="14px" />
+              ) : (
+                <DownArrow height="14px" width="14px" />
+              )
+            ) : null}
           </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>Actions</span>
