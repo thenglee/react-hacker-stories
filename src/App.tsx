@@ -326,6 +326,14 @@ const SearchForm = ({
   </StyledSearchForm>
 );
 
+const StyledHeaderButton = styled.button<{ backgroundColor: boolean }>`
+  background: transparent;
+  border: 1px solid #171212;
+  padding: 5px;
+  background-color: ${props =>
+    props.backgroundColor ? '#EDBCBC' : 'transparent'};
+`;
+
 type ListProps = {
   list: Stories;
   onRemoveItem: (item: Story) => void;
@@ -340,10 +348,18 @@ const SORTS = {
 };
 
 const List = ({ list, onRemoveItem }: ListProps) => {
+  const defaultBtnStates = {
+    TITLE: false,
+    AUTHOR: false,
+    COMMENT: false,
+    POINT: false
+  };
   const [sort, setSort] = React.useState('NONE');
+  const [activeBtn, setActiveBtn] = React.useState(defaultBtnStates);
 
   const handleSort = (sortKey: string) => {
     setSort(sortKey);
+    setActiveBtn({ ...defaultBtnStates, ...{ [sortKey]: true } });
   };
 
   const sortFunction = SORTS[sort as keyof typeof SORTS];
@@ -353,24 +369,40 @@ const List = ({ list, onRemoveItem }: ListProps) => {
     <div>
       <div style={{ display: 'flex' }}>
         <span style={{ width: '40%' }}>
-          <button type="button" onClick={() => handleSort('TITLE')}>
+          <StyledHeaderButton
+            backgroundColor={activeBtn['TITLE']}
+            type="button"
+            onClick={() => handleSort('TITLE')}
+          >
             Title
-          </button>
+          </StyledHeaderButton>
         </span>
         <span style={{ width: '30%' }}>
-          <button type="button" onClick={() => handleSort('AUTHOR')}>
+          <StyledHeaderButton
+            backgroundColor={activeBtn['AUTHOR']}
+            type="button"
+            onClick={() => handleSort('AUTHOR')}
+          >
             Author
-          </button>
+          </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>
-          <button type="button" onClick={() => handleSort('COMMENT')}>
+          <StyledHeaderButton
+            backgroundColor={activeBtn['COMMENT']}
+            type="button"
+            onClick={() => handleSort('COMMENT')}
+          >
             Comments
-          </button>
+          </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>
-          <button type="button" onClick={() => handleSort('POINT')}>
+          <StyledHeaderButton
+            backgroundColor={activeBtn['POINT']}
+            type="button"
+            onClick={() => handleSort('POINT')}
+          >
             Points
-          </button>
+          </StyledHeaderButton>
         </span>
         <span style={{ width: '10%' }}>Actions</span>
       </div>
