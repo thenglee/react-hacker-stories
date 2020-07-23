@@ -190,12 +190,38 @@ const StyledInput = styled.input`
   font-size: 24px;
 `;
 
-const App = () => {
-  const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
+const getUrl = (searchTerm: string) => `${API_ENDPOINT}${searchTerm}`;
+
+const extractSearchTerm = (url: string) => url.replace(API_ENDPOINT, '');
+
+const getLastSearches = (urls: Array<string>) => {
+  return urls
+    .reduce((result: Array<string>, url, index) => {
+      const searchTerm = extractSearchTerm(url);
+
+      if (index === 0) {
+        return result.concat(searchTerm);
+      }
+
+      const previousSearchTerm = result[result.length - 1];
+
+      if (searchTerm === previousSearchTerm) {
+        return result;
+      } else {
+        return result.concat(searchTerm);
+      }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
+    .map(extractSearchTerm);
+};
+
+const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', '');
 
-  const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
+  const [urls, setUrls] = React.useState([getUrl(searchTerm)]);
 
   const [stories, dispatchStories] = React.useReducer(storiesReducer, {
     data: [],
@@ -207,7 +233,8 @@ const App = () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     try {
-      const result = await axios.get(url);
+      const lastUrl = urls[urls.length - 1];
+      const result = await axios.get(lastUrl);
 
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
@@ -216,7 +243,7 @@ const App = () => {
     } catch {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
     }
-  }, [url]);
+  }, [urls]);
 
   React.useEffect(() => {
     handleFetchStories();
@@ -229,13 +256,24 @@ const App = () => {
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(event.target.value);
 
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  const handleSearch = (searchTerm: string) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  };
 
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSearch(searchTerm);
     event.preventDefault();
   };
 
+  const handleLastSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    handleSearch(searchTerm);
+  };
+
   const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
+
+  const lastSearches = getLastSearches(urls);
 
   return (
     <StyledContainer>
@@ -247,6 +285,11 @@ const App = () => {
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
+      />
+
+      <LastSearches
+        lastSearches={lastSearches}
+        onLastSearch={handleLastSearch}
       />
 
       <hr />
@@ -261,6 +304,25 @@ const App = () => {
     </StyledContainer>
   );
 };
+
+type LastSearchesProps = {
+  lastSearches: Array<string>;
+  onLastSearch: (searchTerm: string) => void;
+};
+
+const LastSearches = ({ lastSearches, onLastSearch }: LastSearchesProps) => (
+  <>
+    {lastSearches.map((searchTerm: string, index: number) => (
+      <button
+        key={searchTerm + index}
+        type="button"
+        onClick={() => onLastSearch(searchTerm)}
+      >
+        {searchTerm}
+      </button>
+    ))}
+  </>
+);
 
 type InputWithLabelProps = {
   id: string;
